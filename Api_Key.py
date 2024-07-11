@@ -1,0 +1,1 @@
+Key="api keyini buraya yapıştır."
