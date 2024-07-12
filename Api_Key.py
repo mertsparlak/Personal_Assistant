@@ -1,1 +1,1 @@
-Key="api keyini buraya yapıştır."
+Key="your api key"

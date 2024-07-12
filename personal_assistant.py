@@ -4,6 +4,13 @@ import keyboard
 import subprocess
 import google.generativeai as genai
 import Api_Key as api
+import pyttsx3
+
+def speak(text):
+    engine = pyttsx3.init() 
+    engine.setProperty('rate', 130) # sesin hızını buradan ayarlayabilirsiniz.
+    engine.say(text)  # Metni sesli şekilde söyle
+    engine.runAndWait()  
 
 # Ses tanımayı başlatıyor
 r = sr.Recognizer()
@@ -50,6 +57,8 @@ with sr.Microphone() as source:
 
             text = r.recognize_google(audio_data)
             print(f"You said {text}")
+            speak(f"You said {text}")
+            
             if "open notepad" in text.lower():
                 subprocess.Popen(r"C:\Windows\System32\notepad.exe")
                 print("Senin için note defterini açtım.")
@@ -66,6 +75,7 @@ with sr.Microphone() as source:
                 query = text.lower().split("computer ", 1)[1]  # Sadece 'computer ' kelimesinden sonraki kısmı al
                 response = gemini_ile_konusma(query)
                 print(response)
+                speak(response)
    
     except sr.UnknownValueError:
         print("Komutunuzu tanımlayamadım.")
