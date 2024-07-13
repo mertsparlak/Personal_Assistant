@@ -1,10 +1,14 @@
+import json
 import speech_recognition as sr
 import os
 import keyboard
 import subprocess
 import google.generativeai as genai
-import Api_Key as api
+import api_keys as api
 import pyttsx3
+import weatherinfo as wi
+import gemini_ai as ai
+
 
 def speak(text):
     engine = pyttsx3.init() 
@@ -14,34 +18,6 @@ def speak(text):
 
 # Ses tanımayı başlatıyor
 r = sr.Recognizer()
-
-# Sohbet geçmişini saklamak için bir liste oluşturuyoruz
-sohbet_gecmisi = []
-
-def sohbet_ekle(mesaj):
-    sohbet_gecmisi.append(mesaj)
-    if len(sohbet_gecmisi) > 5:  # Gereksiz uzunluktaki geçmişi sınırlandırmak için
-        sohbet_gecmisi.pop(0)
-
-def sohbeti_getir():
-    return "\n".join(sohbet_gecmisi)
-
-def gemini_ile_konusma(soru):
-    sohbet_ekle(f"Kullanıcı: {soru}")
-    tam_mesaj = sohbeti_getir() + f"\nKullanıcı: {soru}"
-    # Gemini API çağrısı yapılıyor
-    genai.configure(api_key=api.Key)
-    model = genai.GenerativeModel("models/gemini-pro")
-    generation_config = {
-        "temperature": 1,
-        "top_p": 0.95,
-        "top_k": 64,
-        "max_output_tokens": 8192,
-        "response_mime_type": "text/plain",
-    }
-    response = model.generate_content(tam_mesaj)
-    sohbet_ekle(response.text)
-    return response.text
 
 with sr.Microphone() as source:
     try:
@@ -78,10 +54,23 @@ with sr.Microphone() as source:
             elif "pause music" in text.lower() or "pause song" in text.lower() or "play music" in text.lower() or "resume music" in text.lower():
 
                 exec(open(r"C:\Users\merts\OneDrive\Belgeler\GitHub\Personal_Assistant\pause_or_play_music").read())
-            
+                
+            elif "how is the weather in" in text.lower():
+                name_city = text.lower().split("how is the weather in ")[1]
+                response = wi.get_weather(city_name=name_city, api_key=api.open_weather_map_api_key)
+                if response is not None:
+                    weather_data = response
+                    response_text = f"For {weather_data['city']}, Weather is {weather_data['weather']}, Temperature is {weather_data['temperature']} celsius, Humidity is {weather_data['humidity']} percent"
+                    print(response_text)
+                    speak(response_text)
+                else:
+                    print("Weather data could not be retrieved.")
+                    speak("Weather data could not be retrieved.")
+
+                    
             elif "computer" in text.lower():
                 query = text.lower().split("computer ", 1)[1]  # Sadece 'computer ' kelimesinden sonraki kısmı al
-                response = gemini_ile_konusma(query)
+                response = ai.gemini_ile_konusma(query)
                 print(response)
                 speak(response)
    
