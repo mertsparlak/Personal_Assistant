@@ -71,6 +71,14 @@ with sr.Microphone() as source:
             elif "good nigth computer" in text.lower():
                 os.system("rundll32.exe powrprof.dll, SetSuspendState 0,1,0")
             
+            elif "start music" in text.lower():
+                speak("starting music")
+                exec(open(r"C:\Users\merts\OneDrive\Belgeler\GitHub\Personal_Assistant\open_and_play.py").read())
+                
+            elif "pause music" in text.lower() or "pause song" in text.lower() or "play music" in text.lower() or "resume music" in text.lower():
+
+                exec(open(r"C:\Users\merts\OneDrive\Belgeler\GitHub\Personal_Assistant\pause_or_play_music").read())
+            
             elif "computer" in text.lower():
                 query = text.lower().split("computer ", 1)[1]  # Sadece 'computer ' kelimesinden sonraki kısmı al
                 response = gemini_ile_konusma(query)
