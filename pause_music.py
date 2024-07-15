@@ -6,7 +6,6 @@ import win32process
 from pywinauto import Application
 
 
-#locate physical window
 
 def get_spotify_window_title(pids):
     
@@ -30,8 +29,8 @@ def press_key(spotify_pids):
     
     app = Application().connect(process=get_spotify_window_title(spotify_pids))
     app.top_window().set_focus()
-    time.sleep(1)  # Wait for Spotify to load
-    pyautogui.press('space')  # Play the song
+    time.sleep(1)  
+    pyautogui.press('space')  
 
     window = app.top_window()
 
@@ -58,7 +57,7 @@ while True and time.time() < timeout:
     else:
         if isOpen:
             print("Spotify is OPEN")
-            # finished looping succesfully
+            
             time.sleep(1)
             press_key(process_ids)
         else:

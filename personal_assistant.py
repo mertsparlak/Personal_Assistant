@@ -4,12 +4,16 @@ import speech_recognition as sr
 import os
 import keyboard
 import subprocess
-import google.generativeai as genai
+import locale
+import yfinance as yf
+import cryptocompare
+import requests
+import finance as fin
 import api_keys as api
 import pyttsx3
 import weatherinfo as wi
 import gemini_ai as ai
-import locale
+
 
 try:
     locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
@@ -24,20 +28,21 @@ from ttkbootstrap.constants import *
 
 def speak(text):
     engine = pyttsx3.init() 
-    engine.setProperty('rate', 130) # sesin hızını buradan ayarlayabilirsiniz.
-    engine.say(text)  # Metni sesli şekilde söyle
-    engine.runAndWait()  
+    engine.setProperty('rate', 130)
+    engine.say(text)
+    engine.runAndWait()
 
 # Ses tanımayı başlatıyor
 r = sr.Recognizer()
 
 def start_assistant():
     speak("How can I help you?")
+    cryptos = fin.get_crypto_symbols()
     with sr.Microphone() as source:
         try:
             while True:
-
                 print("Dinliyorum...")
+                speak("listening...")
                 audio_data = r.listen(source, phrase_time_limit=7) # kaç saniye dinleyeceğini değiştirebilirsiniz burada
                 print("İsteğinizi tanımlıyorum...")
 
@@ -47,14 +52,14 @@ def start_assistant():
                 
                 if "open notepad" in text.lower():
                     subprocess.Popen(r"C:\Windows\System32\notepad.exe")
-                    print("Senin için note defterini açtım.")
+                    speak("Senin için not defterini açtım.")
                     
                 elif "search google for" in text.lower():
                     query=text.lower().split("search google for ")[1] #neyi aratmasını söylediysek, split ile search google for kısmını atıyoruz komutumuzdan.
                     query=query.replace(" ","+")
                     os.system(f"start https://google.com/search?q={query}")
                     
-                elif "good nigth computer" in text.lower():
+                elif "good night computer" in text.lower():
                     os.system("rundll32.exe powrprof.dll, SetSuspendState 0,1,0")
                 
                 elif "start music" in text.lower():
@@ -73,9 +78,26 @@ def start_assistant():
                         print("Weather data could not be retrieved.")
                         speak("Weather data could not be retrieved.")
 
+                elif "stock price of" in text.lower():
+                    stock_name = text.lower().split("stock price of ")[1]
+                    if stock_name in fin.stock_symbols:
+                        stock_price = fin.get_stock_price(fin.stock_symbols[stock_name])
+                        speak(f"{stock_name.capitalize()} stock price is {stock_price} dollars.")
+                        print(f"{stock_name.capitalize()} stock price is {stock_price} dollars.")
+                    else:
+                        speak("Stock not found.")
+
+                elif "price of" in text.lower():
+                    crypto_name = text.lower().split("price of ")[1]
+                    if crypto_name in cryptos:
+                        crypto_price = fin.get_crypto_price(cryptos[crypto_name])
+                        print(f"{crypto_name.capitalize()} price is {crypto_price} dollars")
+                        speak(f"{crypto_name.capitalize()} price is {crypto_price} dollars")
+                    else:
+                        speak("Cryptocurrency not found")
                         
                 elif "computer" in text.lower():
-                    query = text.lower().split("computer ", 1)[1]  # Sadece 'computer ' kelimesinden sonraki kısmı al
+                    query = text.lower().split("computer ", 1)[1]
                     response = ai.gemini_ile_konusma(query)
                     print(response)
                     speak(response)
