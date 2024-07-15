@@ -15,6 +15,7 @@ import weatherinfo as wi
 import gemini_ai as ai
 
 
+
 try:
     locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
 except locale.Error:
@@ -43,7 +44,7 @@ def start_assistant():
             while True:
                 print("Dinliyorum...")
                 speak("listening...")
-                audio_data = r.listen(source, phrase_time_limit=7) # kaç saniye dinleyeceğini değiştirebilirsiniz burada
+                audio_data = r.listen(source, phrase_time_limit=5) # kaç saniye dinleyeceğini değiştirebilirsiniz burada
                 print("İsteğinizi tanımlıyorum...")
 
                 text = r.recognize_google(audio_data)

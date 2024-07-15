@@ -30,6 +30,6 @@ while True:
             time.sleep(1)
             continue
     break
-time.sleep(7) ## spotify açılma süresine göre, kendi sistemine göre değiştirebilirsin bu süreyi.
+time.sleep(3) ## spotify açılma süresine göre, kendi sistemine göre değiştirebilirsin bu süreyi.
 pyautogui.press("space") ## müziği başlatacak
 
